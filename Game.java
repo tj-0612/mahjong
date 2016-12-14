@@ -1,4 +1,4 @@
-
+import mypackage.Pai;
 public class Game{
 	Player[] player=new Player[4];
 	Board b;
@@ -16,17 +16,53 @@ public class Game{
 
 	public void playGame(){
 		int i,j,sutehai;
-		for(i=0;i<4;i++){
-			player[i].tsumo(b.getpai());
-			sutehai=player[i].hand.select();
+		boolean end_flag=false;
+		boolean[] naki_flag=new boolean[4];
+		int[] naki=new int[4];
+		while(end_flag!=true){
+			//鳴き処理
+			int chiimati=-1;
+			boolean skip_flag=false;
+			for(j=0;j<4;j++){
+				if(naki_flag[j]==true){
+					skip_flag=true;
+					if(naki[j]==2)
+						chiimati=j;
+					else {
+						player[j].hand.naki(sutehai,naki[j]);
+						if(naki[j]==3)
+							player[i].tsumo(b.getpai());
+						sutehai=player[i].hand.select(true);
+						chiimati=-1;
+						break;
+					}
+				}
+			}
+			if(chiimati!=-1){
+				player[chiimati].hand.naki(sutehai,naki[chiimati],player[chiimati].hand.chiireserve);
+			}
+
+
+			if(skip_flag==false){
+				player[i].tsumo(b.getpai());
+				sutehai=player[i].hand.select(false);
+				printBoard();
+			}
 
 			for(j=0;j<4;j++){
 				if(j!=i){
 					if(player[j].hand.ableToNaki(sutehai)==true){
-						player[j].hand.naki(sutehai);
+						naki_flag[i] = true;
+						naki[j]=player[j].nakiselect(sutehai);
+					}else{
+						naki[j]=-1;
+						naki_flag[i] = false;
 					}
 				}
 			}
+			i++;
+			if(i==4)
+				i=0;
 		}
 	}
 
@@ -39,6 +75,7 @@ public class Game{
 
 		while(true){
 			g.initialize();
+
 			g.playGame();
 		}
 

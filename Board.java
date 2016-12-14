@@ -1,4 +1,5 @@
 import java.util.Random;
+import mypackage.Pai;
 public class Board{
 	int[] yama=new int[136];
 	/*yama[0]~yama[121]までが山でyama[122]~yama[135]までが王牌

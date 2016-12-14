@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import mypackage.Pai;
 
 public class Hand{
 	int[] myhand=new int[14];
@@ -10,20 +11,19 @@ public class Hand{
 	int[] sutehai=new int[24];
 	int junme;
 	int kan;
+	int chiireserve=0;
+
 	boolean richi;
+	private int[] kindMyHand = new int[38];
 
 
-	public int tsumogiri(){
-		int sutehai;
-		sutehai = myhand[num_hand-1];
-		return sutehai;
-	}
-	public int select(){
+	public int select(boolean naki){
 		int sutehai;
 		if(richi==true){
-			sutehai=this.tsumogiri();
+			sutehai = myhand[num_hand-1];
+			return sutehai;
 		}else{
-			if(shanten==0 && naki==0){
+			if(shanten==0 && naki==false){
 				System.out.println("リーチしますか");
 				InputStreamReader reader = new InputStreamReader(System.in);
 				try{
@@ -32,8 +32,8 @@ public class Hand{
 						richi=true;
 					}
 				}catch(Exception e){
-
 				}
+
 				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 				try{
 					int in = Integer.parseInt(br.readLine());
@@ -52,7 +52,10 @@ public class Hand{
 		}
 		return sutehai;
 	}
-	public int naki(){
+	public int naki(int sutehai,int... select){
+
+	}
+	public int naki(int sutehai,int rinshan){
 		InputStreamReader reader = new InputStreamReader(System.in);
 		System.out.println("鳴きますか？(１：ポン　２：チー ３：カン");
 		try{
@@ -61,7 +64,10 @@ public class Hand{
 			case '1':
 
 			case '2':
+
 			case '3':
+				return 2;
+				break;
 			default:
 			}
 		}catch(Exception e){
@@ -87,7 +93,6 @@ public class Hand{
 	private int mentu;
 	private int toitu;
 	private int tatsu;
-	private int[] kindMyHand = new int[38];
 	private int tatsuCut(int i){
 		int tempshanten;
 		for(;i<38;i++){
@@ -154,7 +159,18 @@ public class Hand{
 		return tempshanten;
 	}
 	private int normalShanten(){
+		mentu=naki;
+		toitu=0;
+		tatsu=0;
+
 		int i;
+		for(i=0;i<38;i++){
+			kindMyHand[i]=0;
+		}
+		for(i=0;i<num_hand;i++){
+			kindMyHand[myhand[i]]++;
+		}
+
 		int tempshanten=8;
 		int tempshanten2=8;
 		for(i=31;i<38;i++){
@@ -179,6 +195,51 @@ public class Hand{
 			tempshanten2=tempshanten;
 		return tempshanten2;
 	}
+	private int kokushiShanten(){
+		int tempshanten=13;
+		int temp;
+		int toitu;
+		if(naki!=0)
+			return 14;
+		int i;
+		for(i=0;i<38;i++){
+			kindMyHand[i]=0;
+		}
+		for(i=0;i<14;i++){
+			if((myhand[i]<31&&(myhand[i]%11==0||myhand[i]%11==8)) || myhand[i]>=31){
+				if(temp!=myhand[i]){
+					temp=myhand[i];
+					tempshanten--;
+				}else if(toitu==0){
+					toitu=1;
+					tempshanten--;
+				}
+			}
+		}
+		return tempshanten;
+	}
+	int titoiShanten(){
+		if(naki!=0)
+			return 14;
+		toitu=0;
+		int i;
+		for(i=0;i<38;i++){
+			kindMyHand[i]=0;
+		}
+		for(i=0;i<14;i++){
+			kindMyHand[myhand[i]]++;
+		}
+
+		int tempshanten=6;
+		for(i=0;i<38;i++){
+			if(kindMyHand[i]>=2){
+				toitu++;
+				kindMyHand[i]-=2;
+				tempshanten--;
+			}
+		}
+		return tempshanten;
+	}
 	public int mainShanten(){
 		int nshanten = normalShanten();
 		int titoi = titoiShanten();
@@ -196,7 +257,21 @@ public class Hand{
 		}
 		System.out.println("agariform :"+agariform);
 	}
-	boolean ableToNaki(int pai){
+	boolean ableToNaki(int nakuhai){
+		if((kindMyHand[nakuhai-1]>=1&&kindMyHand[nakuhai+1]>=1) 
+			|| (kindMyHand[nakuhai-2]>=1&&kindMyHand[nakuhai-1]>=1)
+			|| (kindMyHand[nakuhai+1]>=1&&kindMyHand[nakuhai+2]>=1) ){
+			return true;
+
+		if(kindMyHand[nakuhai-1]>=1&&kindMyHand[nakuhai+1]>=1){
+			return true;
+		}
+		if(kindMyHand[nakuhai-2]>=1&&kindMyHand[nakuhai-1]>=1){
+			return true;
+		}
+		if(kindMyHand[nakuhai+1]>=1&&kindMyHand[nakuhai+2]>=1){
+			return true;
+		}
 		return false;
 	}
 
