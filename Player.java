@@ -30,7 +30,6 @@ public class Player{
 					return 1;
 				else
 					return 0;
-				break;
 			case '2':
 				if((kindmyhand[nakuhai-1]>=1&&kindmyhand[nakuhai+1]>=1) 
 					|| (kindmyhand[nakuhai-2]>=1&&kindmyhand[nakuhai-1]>=1)
@@ -75,13 +74,13 @@ public class Player{
 					return 2;
 				else
 					return 0;
-				break;
 			default:
 				return 0;
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+		return 0;
 	}
 	Player(int jihuu){
 		hand = new Hand();

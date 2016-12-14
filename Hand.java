@@ -18,7 +18,7 @@ public class Hand{
 
 
 	public int select(boolean naki){
-		int sutehai;
+		int sutehai=-1;
 		if(richi==true){
 			sutehai = myhand[num_hand-1];
 			return sutehai;
@@ -53,8 +53,8 @@ public class Hand{
 		return sutehai;
 	}
 	public int naki(int sutehai,int... select){
-
-	}
+		return 0;
+	}/*
 	public int naki(int sutehai,int rinshan){
 		InputStreamReader reader = new InputStreamReader(System.in);
 		System.out.println("鳴きますか？(１：ポン　２：チー ３：カン");
@@ -73,7 +73,7 @@ public class Hand{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	}
+	}*/
 	public void sortMyHand(){
 		int i,j,temp,flag;
 		for(i=0;i<num_hand-1;i++){
@@ -94,7 +94,7 @@ public class Hand{
 	private int toitu;
 	private int tatsu;
 	private int tatsuCut(int i){
-		int tempshanten;
+		int tempshanten=8;
 		for(;i<38;i++){
 			if(mentu+tatsu<4){
 				if(kindMyHand[i]==2){
@@ -130,7 +130,7 @@ public class Hand{
 		return tempshanten;
 	}
 	private int mentuCut(int i){
-		int tempshanten;
+		int tempshanten=8;
 		for(;i<38;i++){
 			//刻子
 			if(kindMyHand[i]>=3){
@@ -197,8 +197,8 @@ public class Hand{
 	}
 	private int kokushiShanten(){
 		int tempshanten=13;
-		int temp;
-		int toitu;
+		int temp=-1;
+		int toitu=0;
 		if(naki!=0)
 			return 14;
 		int i;
@@ -240,12 +240,14 @@ public class Hand{
 		}
 		return tempshanten;
 	}
-	public int mainShanten(){
+	public void mainShanten(){
 		int nshanten = normalShanten();
 		int titoi = titoiShanten();
 		int kokushi = kokushiShanten();
 		this.agariform = 1;
 		System.out.println("シャンテン数:"+nshanten+" "+titoi+" "+kokushi);
+		//シャンテン数の更新
+		shanten=nshanten;
 		if(shanten>titoi){
 			this.agariform=2;
 			this.shanten=titoi;
@@ -262,6 +264,7 @@ public class Hand{
 			|| (kindMyHand[nakuhai-2]>=1&&kindMyHand[nakuhai-1]>=1)
 			|| (kindMyHand[nakuhai+1]>=1&&kindMyHand[nakuhai+2]>=1) ){
 			return true;
+		}
 
 		if(kindMyHand[nakuhai-1]>=1&&kindMyHand[nakuhai+1]>=1){
 			return true;
@@ -275,7 +278,7 @@ public class Hand{
 		return false;
 	}
 
-	public Hand(){
+	Hand(){
 
 	}
 }

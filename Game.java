@@ -13,9 +13,11 @@ public class Game{
 			player[i].hand.sortMyHand();
 		}
 	}
+	public void printBoard(){
 
+	}
 	public void playGame(){
-		int i,j,sutehai;
+		int i=0,j,sutehai=-1;
 		boolean end_flag=false;
 		boolean[] naki_flag=new boolean[4];
 		int[] naki=new int[4];
@@ -46,7 +48,7 @@ public class Game{
 			if(skip_flag==false){
 				player[i].tsumo(b.getpai());
 				sutehai=player[i].hand.select(false);
-				printBoard();
+				//printBoard();
 			}
 
 			for(j=0;j<4;j++){
@@ -78,7 +80,8 @@ public class Game{
 
 			g.playGame();
 		}
-
+	
 
 	}
+	Game(){}
 }
