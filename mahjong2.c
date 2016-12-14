@@ -126,7 +126,7 @@ void printagari(struct Agariyaku *yaku);
 struct HandState Myhandstate;
 int sumkan;
 int pai[PAIKIND];
-int myHand[14];
+int myHand[14][4];
 int dora[5][2];//dora[0][0]をドラ表示牌、dora[0][1]をドラ表示牌の裏ドラ
 int rinshan[4];
 int suteHai[24];
@@ -220,12 +220,13 @@ void makeBoard(){
 		else
 			pai[i]=0;
 	}
-	
 
 	//山
+	/*
 	makehaipai();
 	i=14;
-
+	*/
+	i=0;
 	while(i<MAX_PAI - WANPAI){
 		int select = setPai();
 		if(select != -1){
@@ -270,9 +271,11 @@ void makeBoard(){
 		suteHai[i]=-1;
 	}
 	//手牌の生成
-	for(i=0;i<14;i++){
-		myHand[i]=board[i];
-		num_tsumo++;
+	for(j=0;j<4;j++)
+		{	for(i=0;i<14;i++){
+			myHand[i]=board[i];
+			num_tsumo++;
+		}
 	}
 	sortMyHand(num_tehai);
 }
@@ -1126,7 +1129,7 @@ int ippatsu(struct ConstitutionAgari ca){
 	int yaku=0;
 	if(num_tsumo+1==Myhandstate.richi_junme)
 		yaku=1;
-	
+
 	return yaku;
 }
 int rinshantsumo(struct ConstitutionAgari ca){
