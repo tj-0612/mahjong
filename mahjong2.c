@@ -4,8 +4,11 @@
 #include <time.h>
 
 /*
-シャンテン数(一般系とチートイ)+のバグ
-上がり時のセグフォ
+次回の実装すべきこと
+副露時の上がり役判定のデバッグ
+その他特殊役の実装（役満、一発、リンシャンカイホーなど）
+４人麻雀への拡張（３人はツモ切り
+（関数や変数の整理）？
 */
 #define MAX_PAI 136
 #define WANPAI 14
@@ -63,9 +66,11 @@ struct ConstitutionAgari{
 
 struct HandState{
 	int richi;//リーチの有無
+	int richi_junme;
 	int naki;//鳴きの回数
 	int nakikind[4]; //鳴きの種類
 	int kan;
+	int rinshanhai;
 };
 
 struct Myshanten
@@ -204,8 +209,10 @@ void makeBoard(){
 	jihuu = 1;
 	bahuu = 1;
 	Myhandstate.richi=0;
+	Myhandstate.richi_junme=-1;
 	Myhandstate.naki=0;
 	Myhandstate.kan=0;
+	Myhandstate.rinshanhai=-1;
 	//全ての牌を４枚ずつ用意する
 	for(i=0;i<PAIKIND;i++){
 		if(checkPaiKind(i))
@@ -362,7 +369,6 @@ int playKan(){
 			kan=1;
 
 		if(kan==4){
-			printf("a\n");
 			break;
 		}
 	}
@@ -378,8 +384,8 @@ int playKan(){
 			Myhandstate.nakikind[Myhandstate.naki]=ANKAN;
 			Myhandstate.naki++;
 			myHand[num_tehai-1] = rinshan[sumkan];
+			Myhandstate.rinshanhai=rinshan[sumkan];
 			sumkan++;
-			printf("a\n");
 			return 1;
 		}
 	}
@@ -387,11 +393,14 @@ int playKan(){
 }
 void playGame(int shanten){
 	int flag=0;
+	Myhandstate.rinshanhai=-1;
 	if(shanten==0&&Myhandstate.richi==0){
 		printf("リーチしますか?(する:1 しない:0)：");
 		scanf("%d",&flag);
 		if(flag==1){
+			if(num_tsumo==14)
 			Myhandstate.richi=1;
+			Myhandstate.richi_junme=num_tsumo;
 			playselect();
 			return ;
 		}
@@ -695,7 +704,7 @@ int yakuhai(struct ConstitutionAgari ca){
 	int yaku=0;
 	int i;
 	for(i=0;i<=8;i+=2){
-		if(ca.kiriwake[i]==ANKO || ca.kiriwake[i]==ANKAN ){
+		if(ca.kiriwake[i]==ANKO || ca.kiriwake[i]==ANKAN ||ca.kiriwake[i]==PON){
 			if(ca.kiriwake[i+1]==31+jihuu-1)
 				yaku++;
 			if(ca.kiriwake[i+1]==31+bahuu-1)
@@ -710,7 +719,7 @@ int yakuhai(struct ConstitutionAgari ca){
 int pinfu(struct ConstitutionAgari ca){
 	int yaku=0;
 	int i;
-	if(ca.kiriwake[1]==31+jihuu-1 || ca.kiriwake[1]==31+bahuu-1 || ca.kiriwake[1]>=35)
+	if(ca.kiriwake[1]==31+jihuu-1 || ca.kiriwake[1]==31+bahuu-1 || ca.kiriwake[1]>=35 || Myhandstate.naki!=0)
 		return yaku;
 	for(i=0;i<=8;i+=2){
 		if(ca.kiriwake[i]==TOITU){
@@ -784,7 +793,10 @@ int sanshokudoujun(struct ConstitutionAgari ca){
 	int flag[3]={0,0,0};
 	for(i=1;i<=5;i+=2){
 		if(flag[0]>=1&&flag[1]>=1&&flag[2]>=1){
-			yaku=2;
+			if(Myhandstate.naki==0)
+				yaku=2;
+			else
+				yaku=1;
 			break;
 		}
 		flag[0]=0;flag[1]=0;flag[2]=0;
@@ -848,7 +860,10 @@ int ittsu(struct ConstitutionAgari ca){
 			}
 		}
 		if(num[0]==1&&num[1]==1&&num[2]==1){
-			yaku=2;
+			if(Myhandstate.naki==0)
+				yaku=2;
+			else
+				yaku=1;
 			break;
 		}
 	}
@@ -901,7 +916,10 @@ int tyanta(struct ConstitutionAgari ca){
 	if(flag == 5||junchan(ca)>0)
 		return yaku;
 	else{
-		yaku=2;
+		if(Myhandstate.naki==0)
+			yaku=2;
+		else
+			yaku=1;
 		return yaku;
 	}
 }
@@ -1105,13 +1123,16 @@ int tsumo(struct ConstitutionAgari ca){
 	return yaku;
 }
 int ippatsu(struct ConstitutionAgari ca){
-	int yaku;
-	yaku=0;
+	int yaku=0;
+	if(num_tsumo+1==Myhandstate.richi_junme)
+		yaku=1;
+	
 	return yaku;
 }
 int rinshantsumo(struct ConstitutionAgari ca){
-	int yaku;
-	yaku=0;
+	int yaku=0;
+	if(Myhandstate.rinshanhai!=-1)
+		yaku=1;
 	return yaku;
 }
 int isDora(int num){
