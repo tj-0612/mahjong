@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "nanikiruai.h"
 
 void sortMyHand();
 void printPai(int p);
 
 int pai[14];
+struct Yukohai s_yukohai[14];
 
 void inputtehai(){
 	char tehai[28];
@@ -35,6 +37,8 @@ void inputtehai(){
 			}
 			for(j=position+1;j<i;j++){
 				if(kind<=2){
+					if(tehai[j]=='0')
+						tehai[j]='5';
 					pai[k]=(int)(tehai[j]-'0'+1)+(kind*11);
 				}else{
 					pai[k]=(int)(tehai[j]-'0')+32;
@@ -175,19 +179,20 @@ int normalShanten(){
 }
 int kokushiShanten(){
 	int tempshanten=13;
-	int temp=-1;
 	int toitu=0;
 	int i;
-	for(i=0;i<40;i++){
+	for(i=2;i<40;i++){
 		kindMyHand[i]=0;
 	}
 	for(i=0;i<14;i++){
-		if((pai[i]<31&&(pai[i]%11==0||pai[i]%11==8)) || pai[i]>=31){
-			if(temp!=pai[i]){
-				temp=pai[i];
+		kindMyHand[pai[i]]++;
+	}
+	for(i=2;i<40;i++){
+		if((i<33&&(i%11==2||i%11==10)) || i>=33){
+			if(kindMyHand[i]>=1)
 				tempshanten--;
-			}else if(toitu==0){
-				toitu=1;
+			if(kindMyHand[i]>=2 && toitu==0){
+				toitu++;
 				tempshanten--;
 			}
 		}
@@ -221,7 +226,6 @@ int mainShanten(){
 	int agariform;
 	int shanten;
 	agariform = 1;
-	
 	//シャンテン数の更新
 	shanten=nshanten;
 	if(shanten>titoi){
@@ -293,11 +297,7 @@ void calcYukouhai(int s,int flag){
 				pai[i]=j;
 				if(flag == 0){
 					shanten=mainShanten();
-				}else if(flag == 1){
-					shanten=titoiShanten();
-				}else if(flag == 2){
-					shanten=kokushiShanten();
-				}else if(flag == 3){
+				}else{
 					shanten=normalShanten();
 				}
 				if(s>shanten && 4-kind[j]>0){
@@ -334,6 +334,8 @@ loop_exit: ;
 			}
 		}
 	}
+
+
 	for(i=0;i<handnum+1;i++){
 		if(yukouhai[i]!=0){
 			printPai(hand[index[i]]);
@@ -341,10 +343,16 @@ loop_exit: ;
 			for(j=0;output[index[i]][j]!=-1;j++){
 				printPai(output[index[i]][j]);
 				printf(" ");
+				s_yukohai[i].yukohai[j]=output[index[i]][j];
 			}
+			s_yukohai[i].yukohai[j]=-1;
 			printf("%d枚\n",yukouhai[i]);
 		}
+		s_yukohai[i].hai=hand[index[i]];
+		s_yukohai[i].num=yukouhai[i];
 	}
+	s_yukohai[i].hai=-1;
+
 }
 void mainYukouhai(int s){
 	int normal,standard,flag=0;
@@ -363,10 +371,10 @@ void mainYukouhai(int s){
 	}
 	if(flag!=0){
 		printf("一般系\n");
-		calcYukouhai(normal,3);
+		calcYukouhai(normal,1);
 		printf("\n");
 		printf("標準形\n");
-		calcYukouhai(standard,flag);
+		calcYukouhai(standard,0);
 	}else{
 		calcYukouhai(s,0);
 	}
@@ -378,5 +386,6 @@ int main(){
 	Shanten=mainShanten();
 	printf("シャンテン数:%d\n",Shanten);
 	mainYukouhai(Shanten);
+	mainnanikiruAI(s_yukohai);
 	return 0;
 }
