@@ -277,9 +277,10 @@ void calcYukouhai(int s,int flag){
 		yukouhai[i]=0;
 	}
 	for(i=0;i<14;i++){
-		for(j=0;j<handnum;j++){
-			if(pai[i]==hand[j])
+		for(j=0;j<=handnum;j++){
+			if(pai[i]==hand[j]){
 				goto loop_exit;
+			}
 		}
 		handnum++;
 		hand[handnum]=pai[i];
@@ -334,13 +335,15 @@ loop_exit: ;
 		}
 	}
 	for(i=0;i<handnum+1;i++){
-		printPai(hand[index[i]]);
-		printf(":");
-		for(j=0;output[index[i]][j]!=-1;j++){
-			printPai(output[index[i]][j]);
-			printf(" ");
+		if(yukouhai[i]!=0){
+			printPai(hand[index[i]]);
+			printf(":");
+			for(j=0;output[index[i]][j]!=-1;j++){
+				printPai(output[index[i]][j]);
+				printf(" ");
+			}
+			printf("%d枚\n",yukouhai[i]);
 		}
-		printf("%d枚\n",yukouhai[i]);
 	}
 }
 void mainYukouhai(int s){
@@ -351,7 +354,7 @@ void mainYukouhai(int s){
 		standard=kokushiShanten();
 		flag++;
 	}
-	if(normal - standard == 1 || normal - standard == 0){
+	if(normal - standard > 0){
 		printf("一般系%dシャンテン\n",normal);
 		printf("標準形%dシャンテン\n",standard);
 		flag++;
