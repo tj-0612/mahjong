@@ -3,6 +3,7 @@
 #include <string.h>
 
 void sortMyHand();
+void printPai(int p);
 
 int pai[14];
 
@@ -177,7 +178,7 @@ int kokushiShanten(){
 	int temp=-1;
 	int toitu=0;
 	int i;
-	for(i=0;i<38;i++){
+	for(i=0;i<40;i++){
 		kindMyHand[i]=0;
 	}
 	for(i=0;i<14;i++){
@@ -196,7 +197,7 @@ int kokushiShanten(){
 int titoiShanten(){
 	toitu=0;
 	int i;
-	for(i=0;i<38;i++){
+	for(i=0;i<40;i++){
 		kindMyHand[i]=0;
 	}
 	for(i=0;i<14;i++){
@@ -204,7 +205,7 @@ int titoiShanten(){
 	}
 
 	int tempshanten=6;
-	for(i=0;i<38;i++){
+	for(i=0;i<40;i++){
 		if(kindMyHand[i]>=2){
 			toitu++;
 			kindMyHand[i]-=2;
@@ -260,20 +261,32 @@ void printPai(int p){
 }
 
 void calcYukouhai(int s,int flag){
-	int i,j;
+	int i,j,k,handnum=-1;
 	int hand[14];
+	int kind[40];
+	int output[14][40];
+	int yukouhai[14];
 	int temp;
 	int shanten;
 	int outflag=0;
+	for(i=0;i<40;i++){
+		kind[i]=0;
+	}
 	for(i=0;i<14;i++){
-		for(j=0;j<i;j++){
+		kind[pai[i]]++;
+		yukouhai[i]=0;
+	}
+	for(i=0;i<14;i++){
+		for(j=0;j<handnum;j++){
 			if(pai[i]==hand[j])
 				goto loop_exit;
 		}
-		hand[i]=pai[i];
+		handnum++;
+		hand[handnum]=pai[i];
 		temp=pai[i];
 
 		outflag=0;
+		k=0;
 		for(j=2;j<40;j++){
 			if(j!=11 && j!=12 && j!=22 && j!=23){
 				pai[i]=j;
@@ -286,21 +299,48 @@ void calcYukouhai(int s,int flag){
 				}else if(flag == 3){
 					shanten=normalShanten();
 				}
-				if(s>shanten){
+				if(s>shanten && 4-kind[j]>0){
 					if(outflag==0){
-						printPai(hand[i]);
-						printf(":");
+						//printPai(hand[handnum]);
+						//printf(":");
 						outflag++;
 					}
-					printPai(j);
-					printf(" ");
+					output[handnum][k]=j;
+					k++;
+					yukouhai[handnum]+= 4 - kind[j];
+					//printPai(j);
+					//printf(" ");
 				}
 				pai[i]=temp;
 			}
 		}
+		output[handnum][k]=-1;
 		if(outflag==1)
-			printf("\n");
+			//printf("\n");
 loop_exit: ;
+	}
+	int index[14]={0,1,2,3,4,5,6,7,8,9,10,11,12,13};
+	for(i=0;i<handnum;i++){
+		for(j=handnum;j>i;j--){
+			if(yukouhai[j]>yukouhai[j-1]){
+				temp = yukouhai[j];
+				yukouhai[j]=yukouhai[j-1];
+				yukouhai[j-1]=temp;
+
+				temp=index[j];
+				index[j]=index[j-1];
+				index[j-1]=temp;
+			}
+		}
+	}
+	for(i=0;i<handnum+1;i++){
+		printPai(hand[index[i]]);
+		printf(":");
+		for(j=0;output[index[i]][j]!=-1;j++){
+			printPai(output[index[i]][j]);
+			printf(" ");
+		}
+		printf("%d枚\n",yukouhai[i]);
 	}
 }
 void mainYukouhai(int s){
@@ -333,7 +373,7 @@ int main(){
 	int Shanten=0;
 	inputtehai();
 	Shanten=mainShanten();
-	printf("shanten is %d\n",Shanten );
+	printf("シャンテン数:%d\n",Shanten);
 	mainYukouhai(Shanten);
 	return 0;
 }
